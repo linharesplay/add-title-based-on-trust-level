@@ -11,7 +11,6 @@ module AddTitleBasedOnTrustLevel
       tl3_title = SiteSetting.tl3_title_on_promotion
       tl4_title = SiteSetting.tl4_title_on_promotion
 
-      trust_levels = [0, 1, 2, 3, 4]
       titles = {
         0 => tl0_title,
         1 => tl1_title,
@@ -20,10 +19,11 @@ module AddTitleBasedOnTrustLevel
         4 => tl4_title,
       }
 
-      if SiteSetting.add_primary_group_title
-        titles.each do |tl, title_template|
-          next if title_template.blank?
+      titles.each do |tl, title_template|
+        next if title_template.blank?
 
+        if SiteSetting.add_primary_group_title
+          # Users WITH a primary group: replace {group_name} with the group name
           DB.exec(<<~SQL, title_template, tl)
             UPDATE users
             SET title = REPLACE(?, '{group_name}', groups.name)
@@ -32,12 +32,16 @@ module AddTitleBasedOnTrustLevel
               AND users.trust_level = ?
               AND users.primary_group_id IS NOT NULL;
           SQL
-        end
-      else
-        titles.each do |tl, title_text|
-          next if title_text.blank?
 
-          User.where(trust_level: tl).update_all(title: title_text)
+          # Users WITHOUT a primary group: apply template removing the placeholder
+          DB.exec(<<~SQL, title_template.gsub('{group_name}', ''), tl)
+            UPDATE users
+            SET title = ?
+            WHERE users.trust_level = ?
+              AND (users.primary_group_id IS NULL);
+          SQL
+        else
+          User.where(trust_level: tl).update_all(title: title_template)
         end
       end
     end
