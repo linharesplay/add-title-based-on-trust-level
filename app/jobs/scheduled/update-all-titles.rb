@@ -12,68 +12,33 @@ module AddTitleBasedOnTrustLevel
       tl4_title = SiteSetting.tl4_title_on_promotion
 
       trust_levels = [0, 1, 2, 3, 4]
+      titles = {
+        0 => tl0_title,
+        1 => tl1_title,
+        2 => tl2_title,
+        3 => tl3_title,
+        4 => tl4_title,
+      }
+
       if SiteSetting.add_primary_group_title
-        trust_levels.each do |tl|
-          User.where(trust_level: 0).update_all("users.title = groups.full_name", "users.primary_group_id = groups.id")
-          if tl == 0
-            DB.exec(<<~SQL, tl0_title, tl)
-              UPDATE users
-              SET title = REPLACE(?, '{group_name}', groups.name)
-              FROM groups
-              WHERE users.primary_group_id = groups.id
-                AND users.trust_level = ?
-                AND users.primary_group_id IS NOT NULL;
-            SQL
-          elsif tl == 1
-            DB.exec(<<~SQL, tl1_title, tl)
-              UPDATE users
-              SET title = REPLACE(?, '{group_name}', groups.name)
-              FROM groups
-              WHERE users.primary_group_id = groups.id
-                AND users.trust_level = ?
-                AND users.primary_group_id IS NOT NULL;
-            SQL
-          elsif tl == 2
-            DB.exec(<<~SQL, tl2_title, tl)
-              UPDATE users
-              SET title = REPLACE(?, '{group_name}', groups.name)
-              FROM groups
-              WHERE users.primary_group_id = groups.id
-                AND users.trust_level = ?
-                AND users.primary_group_id IS NOT NULL;
-            SQL
-          elsif tl == 3
-            DB.exec(<<~SQL, tl3_title, tl)
-              UPDATE users
-              SET title = REPLACE(?, '{group_name}', groups.name)
-              FROM groups
-              WHERE users.primary_group_id = groups.id
-                AND users.trust_level = ?
-                AND users.primary_group_id IS NOT NULL;
-            SQL
-          elsif tl == 4
-            DB.exec(<<~SQL, tl4_title, tl)
-              UPDATE users
-              SET title = REPLACE(?, '{group_name}', groups.name)
-              FROM groups
-              WHERE users.primary_group_id = groups.id
-                AND users.trust_level = ?
-                AND users.primary_group_id IS NOT NULL;
-            SQL
-          end
+        titles.each do |tl, title_template|
+          next if title_template.blank?
+
+          DB.exec(<<~SQL, title_template, tl)
+            UPDATE users
+            SET title = REPLACE(?, '{group_name}', groups.name)
+            FROM groups
+            WHERE users.primary_group_id = groups.id
+              AND users.trust_level = ?
+              AND users.primary_group_id IS NOT NULL;
+          SQL
         end
-          # Append the TL text
-          # User.where(trust_level: 0).update_all("title = title || ' #{tl0_title}'") if tl0_title != ""
-          # User.where(trust_level: 1).update_all("title = title || ' #{tl1_title}'") if tl1_title != ""
-          # User.where(trust_level: 2).update_all("title = title || ' #{tl2_title}'") if tl2_title != ""
-          # User.where(trust_level: 3).update_all("title = title || ' #{tl3_title}'") if tl3_title != ""
-          # User.where(trust_level: 4).update_all("title = title || ' #{tl4_title}'") if tl4_title != ""
       else
-        User.where(trust_level: 0).update_all(title: tl0_title) if tl0_title != ""
-        User.where(trust_level: 1).update_all(title: tl1_title) if tl1_title != ""
-        User.where(trust_level: 2).update_all(title: tl2_title) if tl2_title != ""
-        User.where(trust_level: 3).update_all(title: tl3_title) if tl3_title != ""
-        User.where(trust_level: 4).update_all(title: tl4_title) if tl4_title != ""
+        titles.each do |tl, title_text|
+          next if title_text.blank?
+
+          User.where(trust_level: tl).update_all(title: title_text)
+        end
       end
     end
   end
