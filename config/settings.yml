@@ -20,9 +20,6 @@ plugins:
   add_primary_group_title:
     default: false
     type: bool
-  show_progress_bar_in_title:
-    default: false
-    type: bool
   update_title_frequency:
     default: 24
     type: integer

@@ -1,10 +1,6 @@
 {
   "private": true,
-  "scripts": {
-    "dev": "npx serve preview -p 3000"
-  },
   "devDependencies": {
-    "serve": "^14.2.0",
     "@discourse/lint-configs": "2.21.0",
     "ember-template-lint": "7.7.0",
     "eslint": "9.27.0",
