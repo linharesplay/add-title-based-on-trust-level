@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preview - Titulo com Barra de Progresso</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #141414;
+      --surface-hover: #1a1a1a;
+      --border: #222;
+      --border-hover: #333;
+      --text: #ededed;
+      --text-secondary: #888;
+      --text-muted: #555;
+      --accent: #3b82f6;
+      --accent-glow: rgba(59, 130, 246, 0.15);
+      --radius: 12px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 48px 24px;
+    }
+
+    /* Header */
+    .header { margin-bottom: 40px; }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Info card */
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .info-card .info-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent-glow);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 2px;
+    }
+
+    .info-card code {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.15);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* Controls panel */
+    .controls-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+
+    .controls-panel .panel-header {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .slider-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .slider-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      min-width: 140px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-label .tl-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text);
+      border: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--text);
+      border: none;
+      cursor: pointer;
+    }
+
+    .slider-value {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 42px;
+      text-align: right;
+    }
+
+    /* Section label */
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* Post cards */
+    .post-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 2px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .post-card:first-child {
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .post-card:last-child {
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+
+    .post-card:only-child {
+      border-radius: var(--radius);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .post-content { flex: 1; min-width: 0; }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .username {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .tl-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .tl-0 { background: rgba(136,136,136,0.15); color: #888; }
+    .tl-1 { background: rgba(74,222,128,0.12); color: #4ade80; }
+    .tl-2 { background: rgba(59,130,246,0.12); color: #3b82f6; }
+    .tl-3 { background: rgba(251,146,60,0.12); color: #fb923c; }
+    .tl-4 { background: rgba(248,113,113,0.12); color: #f87171; }
+
+    .user-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .user-title-text {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    /* Modern progress bar */
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-track {
+      width: 80px;
+      height: 6px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .progress-pct {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    .post-body {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .post-time {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: auto;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* Title in Ruby format */
+    .ruby-title-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 32px;
+    }
+
+    .ruby-title-section .panel-header {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .ruby-output {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 2;
+      color: var(--text-secondary);
+    }
+
+    .ruby-output .field-label {
+      color: var(--text-muted);
+    }
+
+    .ruby-output .field-value {
+      color: var(--accent);
+      background: rgba(59, 130, 246, 0.08);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container { padding: 24px 16px; }
+      .slider-label { min-width: 100px; font-size: 12px; }
+      .progress-track { width: 60px; }
+      .post-card { padding: 16px; gap: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>Titulo com Barra de Progresso</h1>
+      <p>Veja como os titulos com barra de progresso aparecem nos posts do Discourse</p>
+    </div>
+
+    <div class="info-card">
+      <div class="info-icon">i</div>
+      <div>
+        O plugin calcula a media de progresso dos requisitos para o proximo trust level
+        (topicos, posts, dias, likes) e gera uma barra no titulo.
+        No Discourse aparece como texto: <code>[██████░░░░] 60%</code>.
+        Abaixo, uma visualizacao moderna do mesmo conceito.
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <div class="panel-header">Ajuste o progresso</div>
+      <div class="slider-group">
+        <div class="slider-item">
+          <span class="slider-label"><span class="tl-dot" style="background:#888"></span> TL0 para TL1</span>
+          <input type="range" id="slider-tl0" min="0" max="100" value="35" oninput="updateAll()" />
+          <span class="slider-value" id="val-tl0">35%</span>
+        </div>
+        <div class="slider-item">
+          <span class="slider-label"><span class="tl-dot" style="background:#4ade80"></span> TL1 para TL2</span>
+          <input type="range" id="slider-tl1" min="0" max="100" value="72" oninput="updateAll()" />
+          <span class="slider-value" id="val-tl1">72%</span>
+        </div>
+        <div class="slider-item">
+          <span class="slider-label"><span class="tl-dot" style="background:#3b82f6"></span> TL2 para TL3</span>
+          <input type="range" id="slider-tl2" min="0" max="100" value="15" oninput="updateAll()" />
+          <span class="slider-value" id="val-tl2">15%</span>
+        </div>
+        <div class="slider-item">
+          <span class="slider-label"><span class="tl-dot" style="background:#fb923c"></span> TL3 para TL4</span>
+          <input type="range" id="slider-tl3" min="0" max="100" value="90" oninput="updateAll()" />
+          <span class="slider-value" id="val-tl3">90%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Posts no Discourse</div>
+
+    <div id="posts"></div>
+
+    <div class="ruby-title-section">
+      <div class="panel-header">Valor salvo no campo title (texto puro)</div>
+      <div class="ruby-output" id="ruby-output"></div>
+    </div>
+  </div>
+
+  <script>
+    const FILLED = '\u2588';
+    const EMPTY  = '\u2591';
+    const BAR_LEN = 10;
+
+    function makeBarText(pct) {
+      const filled = Math.round((pct / 100) * BAR_LEN);
+      const empty = BAR_LEN - filled;
+      return '[' + FILLED.repeat(filled) + EMPTY.repeat(empty) + '] ' + pct + '%';
+    }
+
+    function getProgressColor(pct) {
+      if (pct < 30) return '#f87171';
+      if (pct < 60) return '#fb923c';
+      if (pct < 85) return '#3b82f6';
+      return '#4ade80';
+    }
+
+    const users = [
+      { name: 'Carlos Silva', initials: 'CS', color: '#555', tl: 0, titleBase: 'Novato', group: null, slider: 'slider-tl0', body: 'Oi pessoal! Acabei de entrar no forum, como funciona aqui?', time: '2h' },
+      { name: 'Ana Pereira', initials: 'AP', color: '#16a34a', tl: 1, titleBase: 'Membro', group: 'Moderadores', slider: 'slider-tl1', body: 'Muito bom esse topico! Recomendo tambem dar uma olhada na documentacao oficial.', time: '1h' },
+      { name: 'Bruno Costa', initials: 'BC', color: '#2563eb', tl: 2, titleBase: 'Regular', group: null, slider: 'slider-tl2', body: 'Concordo com a Ana. Acho que deveriamos criar uma categoria separada para isso.', time: '45m' },
+      { name: 'Maria Souza', initials: 'MS', color: '#ea580c', tl: 3, titleBase: 'Veterano', group: 'Staff', slider: 'slider-tl3', body: 'Galera, atualizei as regras da comunidade. Por favor leiam antes de postar.', time: '30m' },
+      { name: 'Admin Jose', initials: 'AJ', color: '#dc2626', tl: 4, titleBase: 'Lider', group: 'Admins', slider: null, body: 'Parabens a todos pelo engajamento este mes! Vamos continuar assim.', time: '15m' },
+    ];
+
+    function updateAll() {
+      const container = document.getElementById('posts');
+      const rubyOutput = document.getElementById('ruby-output');
+      container.innerHTML = '';
+      let rubyHtml = '';
+
+      users.forEach((u) => {
+        const pct = u.slider ? parseInt(document.getElementById(u.slider).value) : null;
+        if (u.slider) {
+          document.getElementById('val-' + u.slider.replace('slider-', '')).textContent = pct + '%';
+        }
+
+        const displayTitle = u.group ? u.titleBase + ' - ' + u.group : u.titleBase;
+        const hasProgress = pct !== null && u.tl < 4;
+
+        // Visual progress bar HTML
+        let progressHtml = '';
+        if (hasProgress) {
+          const barColor = getProgressColor(pct);
+          progressHtml = '' +
+            '<div class="progress-container">' +
+              '<div class="progress-track">' +
+                '<div class="progress-fill" style="width:' + pct + '%;background:' + barColor + '"></div>' +
+              '</div>' +
+              '<span class="progress-pct" style="color:' + barColor + '">' + pct + '%</span>' +
+            '</div>';
+        }
+
+        const card = document.createElement('div');
+        card.className = 'post-card';
+        card.innerHTML = '' +
+          '<div class="avatar" style="background:' + u.color + '">' + u.initials + '</div>' +
+          '<div class="post-content">' +
+            '<div class="post-header">' +
+              '<span class="username">' + u.name + '</span>' +
+              '<span class="tl-badge tl-' + u.tl + '">TL' + u.tl + '</span>' +
+              '<div class="user-title-wrapper">' +
+                '<span class="user-title-text">' + displayTitle + '</span>' +
+                progressHtml +
+              '</div>' +
+              '<span class="post-time">' + u.time + ' atras</span>' +
+            '</div>' +
+            '<div class="post-body">' + u.body + '</div>' +
+          '</div>';
+        container.appendChild(card);
+
+        // Ruby raw title output
+        const rawTitle = hasProgress ? displayTitle + ' ' + makeBarText(pct) : displayTitle;
+        rubyHtml += '<span class="field-label">user.title</span>  <span class="field-value">"' + rawTitle + '"</span><br/>';
+      });
+
+      rubyOutput.innerHTML = rubyHtml;
+    }
+
+    updateAll();
+  </script>
+
+</body>
+</html>
